@@ -1,6 +1,5 @@
-import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { Transaction } from "../../type";
 type Props = {
     transactions: Transaction[];
@@ -40,7 +39,6 @@ export const TransactionListUI: React.FC<Props> = ({ transactions }) => {
 
 
 const styles = StyleSheet.create({
-
  transactionList: {
     paddingHorizontal: 16,
     marginTop: 16,

@@ -1,7 +1,3 @@
-export type Transaction = {
-  id: string;
-  time: string;
-  description: string;
-  amount: number;
-  type: 'income' | 'expense';
-}
+import { InExItem } from "@/types/inex";
+
+export type Transaction = InExItem;

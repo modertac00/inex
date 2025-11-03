@@ -1,106 +1,81 @@
+import { InExItem, InExState, Session } from '@/types/inex';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import 'react-native-get-random-values';
+import { v4 as uuidv4 } from 'uuid';
 
-export interface Transaction {
-  id: string;
-  amount: number;
-  description: string;
-  type: 'income' | 'expense';
-  category: string;
-  date: string;
-}
-
-export interface InexState {
-  transactions: Transaction[];
-  totalIncome: number;
-  totalExpenses: number;
-  balance: number;
-  loading: boolean;
-  error: string | null;
-}
-
-const initialState: InexState = {
-  transactions: [],
+const initialState: InExState = {
+  sessions: [],
+  selectedSessionId: undefined,
   totalIncome: 0,
-  totalExpenses: 0,
-  balance: 0,
-  loading: false,
-  error: null,
+  totalExpense: 0,
+  totalBalance: 0,
+  currentSession: 0,
 };
 
-const inexSlice = createSlice({
-  name: 'inex',
+const inExSlice = createSlice({
+  name: 'inEx',
   initialState,
   reducers: {
-    addTransaction: (state, action: PayloadAction<Transaction>) => {
-      state.transactions.push(action.payload);
-      if (action.payload.type === 'income') {
-        state.totalIncome += action.payload.amount;
-      } else {
-        state.totalExpenses += action.payload.amount;
-      }
-      state.balance = state.totalIncome - state.totalExpenses;
+    // ✅ Create session automatically with UUID if not provided
+    addSession(state, action: PayloadAction<Omit<Session, 'id'>>) {
+      const newSession: Session = {
+        id: state.sessions.length,
+        ...action.payload,
+      };
+      state.selectedSessionId = state.sessions.length;
+      state.sessions.push(newSession);
     },
-    removeTransaction: (state, action: PayloadAction<string>) => {
-      const transactionIndex = state.transactions.findIndex(
-        (transaction) => transaction.id === action.payload
-      );
-      if (transactionIndex !== -1) {
-        const transaction = state.transactions[transactionIndex];
-        if (transaction.type === 'income') {
-          state.totalIncome -= transaction.amount;
-        } else {
-          state.totalExpenses -= transaction.amount;
-        }
-        state.transactions.splice(transactionIndex, 1);
-        state.balance = state.totalIncome - state.totalExpenses;
-      }
+
+    deleteSession(state, action: PayloadAction<number>) {
+      state.sessions = state.sessions.filter(s => s.id !== action.payload);
     },
-    updateTransaction: (state, action: PayloadAction<Transaction>) => {
-      const transactionIndex = state.transactions.findIndex(
-        (transaction) => transaction.id === action.payload.id
-      );
-      if (transactionIndex !== -1) {
-        const oldTransaction = state.transactions[transactionIndex];
-        // Remove old transaction from totals
-        if (oldTransaction.type === 'income') {
-          state.totalIncome -= oldTransaction.amount;
-        } else {
-          state.totalExpenses -= oldTransaction.amount;
-        }
-        
-        // Add new transaction to totals
-        if (action.payload.type === 'income') {
-          state.totalIncome += action.payload.amount;
-        } else {
-          state.totalExpenses += action.payload.amount;
-        }
-        
-        state.transactions[transactionIndex] = action.payload;
-        state.balance = state.totalIncome - state.totalExpenses;
+
+    selectSession(state, action: PayloadAction<number | undefined>) {
+      state.selectedSessionId = action.payload;
+    },
+
+    // ✅ Automatically generate item UUID
+    addItem(
+      state,
+      action: PayloadAction<{
+        sessionId: number;
+        item: Omit<InExItem, 'id'>;
+      }>
+    ) {
+      const session = state.sessions.find(s => s.id === action.payload.sessionId);
+      if (session) {
+        const newItem: InExItem = {
+          id: uuidv4(),
+          ...action.payload.item,
+        };
+        session.items.push(newItem);
       }
     },
-    setLoading: (state, action: PayloadAction<boolean>) => {
-      state.loading = action.payload;
+
+    deleteItem(state, action: PayloadAction<{ sessionId: number; itemId: string }>) {
+      const session = state.sessions.find(s => s.id === action.payload.sessionId);
+      if (session) {
+        session.items = session.items.filter(i => i.id !== action.payload.itemId);
+      }
     },
-    setError: (state, action: PayloadAction<string | null>) => {
-      state.error = action.payload;
-    },
-    clearTransactions: (state) => {
-      state.transactions = [];
-      state.totalIncome = 0;
-      state.totalExpenses = 0;
-      state.balance = 0;
+
+    updateItem(state, action: PayloadAction<{ sessionId: number; item: InExItem }>) {
+      const session = state.sessions.find(s => s.id === action.payload.sessionId);
+      if (session) {
+        const index = session.items.findIndex(i => i.id === action.payload.item.id);
+        if (index !== -1) session.items[index] = action.payload.item;
+      }
     },
   },
 });
 
 export const {
-  addTransaction,
-  removeTransaction,
-  updateTransaction,
-  setLoading,
-  setError,
-  clearTransactions,
-} = inexSlice.actions;
+  addSession,
+  deleteSession,
+  selectSession,
+  addItem,
+  deleteItem,
+  updateItem,
+} = inExSlice.actions;
 
-export default inexSlice.reducer;
+export default inExSlice.reducer;

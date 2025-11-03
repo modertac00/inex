@@ -9,12 +9,23 @@ import {
   Dimensions,
   TouchableWithoutFeedback,
 } from "react-native";
+import { IncomeCategoryModal } from "./income-dashboard/IncomeCategoryModal";
 
 const { height } = Dimensions.get("window");
 
-const CalculatorInexUI: React.FC = () => {
-  const [value, setValue] = useState("");
+type CalculatorInexUIProps = {
+  setType: React.Dispatch<React.SetStateAction<"income" | "expense">>;
+  onSubmit: (value: string) => void;
+  selectCategory: (value: string) => void;
+};
+
+const CalculatorInexUI: React.FC<CalculatorInexUIProps> = ({
+  setType,
+  onSubmit,
+  selectCategory,
+}) => {
   const [visible, setVisible] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
   const slideAnim = useRef(new Animated.Value(height)).current; // Start hidden
 
   const openCalculator = () => {
@@ -43,10 +54,17 @@ const CalculatorInexUI: React.FC = () => {
         <>
           {/* Dim background overlay */}
           <TouchableWithoutFeedback onPress={closeCalculator}>
-            <Animated.View style={[styles.overlay, { opacity: slideAnim.interpolate({
-              inputRange: [0, height],
-              outputRange: [0.5, 0],
-            }) }]} />
+            <Animated.View
+              style={[
+                styles.overlay,
+                {
+                  opacity: slideAnim.interpolate({
+                    inputRange: [0, height],
+                    outputRange: [0.5, 0],
+                  }),
+                },
+              ]}
+            />
           </TouchableWithoutFeedback>
 
           {/* Calculator Panel */}
@@ -56,28 +74,47 @@ const CalculatorInexUI: React.FC = () => {
               { transform: [{ translateY: slideAnim }] },
             ]}
           >
-            <Calculator onSubmit={(v) => setValue(v)} />
-            <Button title="Add" onPress={closeCalculator} />
+            <Calculator
+              onSubmit={(v: string) => {
+                onSubmit(v);
+                closeCalculator();
+              }}
+            />
           </Animated.View>
         </>
-      ) : <View style={styles.controlButtonsContainer}>
-        <Button
-          title="Income"
-          onPress={openCalculator}
-          variant="outline"
-          buttonStyle={styles.incomeButton}
-          textStyle={styles.incomeButtonText}
-        />
-        <Button
-          title="Expense"
-          onPress={openCalculator}
-          variant="outline"
-          buttonStyle={styles.expenseButton}
-          textStyle={styles.expenseButtonText}
-        />
-      </View>}
-        
-        
+      ) : (
+        <View style={styles.controlButtonsContainer}>
+          <Button
+            title="Income"
+            onPress={() => {
+              setType("income");
+              setOpenModal(true);
+            }}
+            variant="outline"
+            buttonStyle={styles.incomeButton}
+            textStyle={styles.incomeButtonText}
+          />
+          <Button
+            title="Expense"
+            onPress={() => {
+              setType("expense");
+              setOpenModal(true);
+            }}
+            variant="outline"
+            buttonStyle={styles.expenseButton}
+            textStyle={styles.expenseButtonText}
+          />
+        </View>
+      )}
+      <IncomeCategoryModal
+        onClose={() => setOpenModal(false)}
+        visible={openModal}
+        onSelectCategory={(category) => {
+          selectCategory(category);
+          openCalculator();
+          setOpenModal(false);
+        }}
+      />
     </View>
   );
 };
@@ -119,8 +156,6 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 20,
-    // shadowOpacity: 0.25,
-    // shadowOffset: { width: 0, height: -3 },
     shadowRadius: 8,
     elevation: 8,
   },

@@ -5,8 +5,11 @@ import HeaderUI from "./HeaderUI";
 import { ActionIcons } from "./ActionIcons";
 import SummaryCardsUI from "./SummaryCardsUI";
 import { TransactionListUI } from "./TransactionListUI";
-
+import { Session } from "@/types/inex";
+import { CollapsedSessionUI } from "./CollapsedSessionUI";
 interface IncomeDashboardUIProps {
+  sessions: Session[];
+  selectedSessionId?: number;
   transactions: Transaction[];
   totalIncome: number;
   totalExpense: number;
@@ -14,7 +17,9 @@ interface IncomeDashboardUIProps {
 }
 
 export function IncomeDashboardUI({
+  sessions,
   transactions,
+  selectedSessionId,
   totalIncome,
   totalExpense,
   totalBalance,
@@ -28,8 +33,16 @@ export function IncomeDashboardUI({
 
       {/* Summary Cards */}
       <View style={styles.summaryContainer}>
-        <SummaryCardsUI total={totalIncome} color="#10b981" iconName="trending-up" />
-        <SummaryCardsUI total={totalExpense} color="#ef4444" iconName="trending-down" />
+        <SummaryCardsUI
+          total={totalIncome}
+          color="#10b981"
+          iconName="trending-up"
+        />
+        <SummaryCardsUI
+          total={totalExpense}
+          color="#ef4444"
+          iconName="trending-down"
+        />
       </View>
 
       {/* Total Balance */}
@@ -37,9 +50,15 @@ export function IncomeDashboardUI({
         <Text style={styles.balanceLabel}>Total Balance</Text>
         <Text style={styles.balanceAmount}>{totalBalance.toFixed(2)}</Text>
       </View>
-
-      {/* Transaction List */}
-      <TransactionListUI transactions={transactions} />
+      {sessions.map((session: Session) => {
+        if (session.id !== selectedSessionId) {
+          return <CollapsedSessionUI key={session.id} session={session} />;
+        } else {
+          return (
+            <TransactionListUI key={session.id} transactions={transactions} />
+          );
+        }
+      })}
     </View>
   );
 }
@@ -55,8 +74,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     marginTop: 16,
   },
- 
-
   expenseAmount: {
     fontSize: 24,
     fontWeight: "700",

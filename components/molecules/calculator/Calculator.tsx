@@ -45,6 +45,7 @@ export function Calculator({ onSubmit }: CalculatorButton) {
       handleOperatorPress={handleOperatorPress}
       handleDecimalPress={handleDecimalPress}
       handleClear={handleClear}
+      handleAdd={handleAdd}
     />
   );
 }

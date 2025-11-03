@@ -2,7 +2,13 @@ import { IconButton } from "@/components/atoms/buttons/IconButton";
 import React from "react";
 import { View, StyleSheet } from "react-native";
 
-const ActionIconsUI = () => {
+type ActionIconsUIProps = {
+  endSession: () => void;
+};
+
+const ActionIconsUI: React.FC<ActionIconsUIProps> = ({
+  endSession,
+}) => {
   return (
     <View style={styles.actionsContainer}>
       <IconButton icon="bar-chart" label="Report" />
@@ -13,6 +19,7 @@ const ActionIconsUI = () => {
         label="End Session"
         color="#ef4444"
         backgroundColor="#fef2f2"
+        onPress={endSession}
       />
     </View>
   );

@@ -1,12 +1,14 @@
 import React, { FC } from "react";
 import { TouchableOpacity, Text, StyleSheet, View } from "react-native";
 import { BUTTON_ROWS } from "./constants";
+import { Button } from "@/components/atoms/buttons/Button";
 
 interface CalculatorUIProps {
   handleNumberPress: (num: string) => void;
   handleOperatorPress: (operator: string) => void;
   handleDecimalPress: () => void;
   handleClear: () => void;
+  handleAdd: () => void;
   value: string;
 }
 
@@ -15,6 +17,7 @@ const CalculatorUI: FC<CalculatorUIProps> = ({
   handleDecimalPress,
   handleNumberPress,
   handleOperatorPress,
+  handleAdd,
   value,
 }) => {
   return (
@@ -60,6 +63,7 @@ const CalculatorUI: FC<CalculatorUIProps> = ({
         </View>
       ))}
       </View>
+                  <Button title="Add" onPress={handleAdd} />
     </View>
   );
 };
