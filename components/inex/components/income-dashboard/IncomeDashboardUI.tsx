@@ -24,6 +24,7 @@ export function IncomeDashboardUI({
   totalExpense,
   totalBalance,
 }: IncomeDashboardUIProps) {
+  const activeSession = sessions[sessions?.length - 1] || null;
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -50,13 +51,30 @@ export function IncomeDashboardUI({
         <Text style={styles.balanceLabel}>Total Balance</Text>
         <Text style={styles.balanceAmount}>{totalBalance.toFixed(2)}</Text>
       </View>
-      {sessions.map((session: Session) => {
-        if (session.id !== selectedSessionId) {
-          return <CollapsedSessionUI key={session.id} session={session} />;
-        } else {
+      {activeSession ? (
+        <View>
+          <Text style={{ fontSize: 16, fontWeight: "600", marginBottom: 8 }}>
+            Active Session
+          </Text>
+          <TransactionListUI
+            key={activeSession.id}
+            transactions={activeSession.items}
+          />
+        </View>
+      ) : (
+        <Text>No transactions available</Text>
+      )}
+      {sessions.map((session: Session, index: number) => {
+        if (index !== sessions.length - 1) {
           return (
-            <TransactionListUI key={session.id} transactions={transactions} />
+            <CollapsedSessionUI
+              key={session.id}
+              session={session}
+              isActive={session.id === selectedSessionId}
+            />
           );
+        } else {
+          return null;
         }
       })}
     </View>

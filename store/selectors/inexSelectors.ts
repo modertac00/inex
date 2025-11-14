@@ -26,6 +26,14 @@ export const selectSelectedSessionItems = createSelector(
   }
 );
 
+export const selectActiveSessionId = createSelector(
+  [selectSessions],
+  (sessions: Session[]): number | undefined => {
+    if (sessions.length === 0) return undefined;
+    return sessions[sessions.length - 1].id;
+  }
+);
+
 export const selectTotalIncome = createSelector(
   [selectSelectedSessionItems],
   (items: InExItem[]): number => {

@@ -2,14 +2,14 @@ import React, { useState } from "react";
 import CalculatorInexUI from "./CalculatorInexUI";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { addItem, addSession } from "@/store/slices/inexSlice";
-import { selectSelectedSession, selectSessions } from "@/store/selectors/inexSelectors";
+import { selectActiveSessionId, selectSelectedSession, selectSessions } from "@/store/selectors/inexSelectors";
 import { InExItem } from "@/types/inex";
 
 type Props = {};
 
 const CalculatorInex: React.FC<Props> = ({}) => {
   const dispatch = useAppDispatch();
-  const selectedSession = useAppSelector(selectSelectedSession);
+  const activeSessionId = useAppSelector(selectActiveSessionId);
   const sessions = useAppSelector(selectSessions);
   
   const [type, setType] = useState<"income" | "expense">("income");
@@ -31,7 +31,7 @@ const CalculatorInex: React.FC<Props> = ({}) => {
     }
 
     // Get the session ID (use 0 if it's the first session we just created)
-    const sessionId = selectedSession?.id ?? 0;
+    
 
     // Create the new InExItem
     const newItem: Omit<InExItem, 'id'> = {
@@ -49,7 +49,7 @@ const CalculatorInex: React.FC<Props> = ({}) => {
 
     // Dispatch the addItem action
     dispatch(addItem({
-      sessionId,
+      sessionId: activeSessionId ?? 0,
       item: newItem,
     }));
   };

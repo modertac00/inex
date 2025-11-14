@@ -34,6 +34,19 @@ const inExSlice = createSlice({
       state.selectedSessionId = action.payload;
     },
 
+    unselectSession(state) {
+      state.selectedSessionId = undefined;
+    },
+
+    undo(state) {
+      if(state.sessions.length > 0){
+        const lastSession = state.sessions[state.sessions.length - 1];
+        if(lastSession.items.length > 0){
+          lastSession.items.pop();
+        }
+      }
+    },
+
     // ✅ Automatically generate item UUID
     addItem(
       state,
@@ -73,6 +86,8 @@ export const {
   addSession,
   deleteSession,
   selectSession,
+  undo,
+  unselectSession,
   addItem,
   deleteItem,
   updateItem,

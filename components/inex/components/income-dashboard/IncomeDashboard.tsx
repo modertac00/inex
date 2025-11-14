@@ -38,24 +38,7 @@ const IncomeDashboard: React.FC<Props> = ({}) => {
   }));
   
   // If no sessions exist, show sample data for development
-  const sampleTransactions: Transaction[] = !hasSessions ? [
-    {
-      id: '1',
-      time: '11:58:37',
-      title: 'Sample Expense',
-      description: 'General Expense',
-      amount: 1000.0,
-      type: 'expense',
-    },
-    {
-      id: '2',
-      time: '11:56:37',
-      title: 'Sample Income',
-      description: 'General Income',
-      amount: 10000.0,
-      type: 'income',
-    },
-  ] : [];
+  const sampleTransactions: Transaction[] =[];
   
   const displayTransactions = transactions.length > 0 ? transactions : sampleTransactions;
   const displayTotalIncome = totalIncome;

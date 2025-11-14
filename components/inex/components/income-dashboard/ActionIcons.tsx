@@ -1,7 +1,7 @@
 import React from "react";
 import ActionIconsUI from "./ActionIconsUI";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { addSession, selectSession } from "@/store/slices/inexSlice";
+import { addSession, selectSession, undo } from "@/store/slices/inexSlice";
 import { selectSelectedSession, selectSessions } from "@/store/selectors/inexSelectors";
 
 type Props = {};
@@ -13,12 +13,10 @@ export const ActionIcons: React.FC<Props> = () => {
 
   const endSession = () => {
     if (!selectedSession || selectedSession.items.length === 0) {
-      console.log("No active session with items to end.");
       return;
     }
 
-    console.log("Ending current session...", selectedSession.id);
-    
+
     // Create a new session for the next entries
     const newSessionId = sessions.length; // This will be the ID of the new session
     dispatch(addSession({
@@ -29,8 +27,12 @@ export const ActionIcons: React.FC<Props> = () => {
     // Select the new session
     dispatch(selectSession(newSessionId));
     
-    console.log(`Session ${selectedSession.id} ended. New session ${newSessionId} started.`);
   };
 
-  return <ActionIconsUI endSession={endSession} />;
+  const undoAction = () => {
+    // Dispatch undo action
+    dispatch(undo());
+  }
+
+  return <ActionIconsUI endSession={endSession} undoAction={undoAction} />;
 };

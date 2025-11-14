@@ -4,16 +4,18 @@ import { View, StyleSheet } from "react-native";
 
 type ActionIconsUIProps = {
   endSession: () => void;
+  undoAction: () => void;
 };
 
 const ActionIconsUI: React.FC<ActionIconsUIProps> = ({
   endSession,
+  undoAction,
 }) => {
   return (
     <View style={styles.actionsContainer}>
       <IconButton icon="bar-chart" label="Report" />
       <IconButton icon="settings-outline" label="Settings" />
-      <IconButton icon="arrow-undo" label="Undo" />
+      <IconButton icon="arrow-undo" label="Undo" onPress={undoAction} />
       <IconButton
         icon="power"
         label="End Session"
